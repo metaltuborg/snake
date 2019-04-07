@@ -24,26 +24,12 @@ def eastOf(p: Point) -> Point:
 def westOf(p: Point) -> Point:
     return Point(p.x-1, p.y)
 
-rewind = {
-    Direction.WEST: eastOf,
-    Direction.EAST: westOf,
-    Direction.NORTH: southOf,
-    Direction.SOUTH: northOf
-}
-
 onward = {
     Direction.WEST: westOf,
     Direction.EAST: eastOf,
     Direction.NORTH: northOf,
     Direction.SOUTH: southOf
 }
-
-def trace(start: Point, moves):
-    loc, tail = start, deque([])
-    for m in moves:
-        loc = rewind[m](loc)
-        tail.append(loc)
-    return tail
 
 
 class Snake:
@@ -54,24 +40,22 @@ class Snake:
         assert gameSize > 2*initialLength
         self.size = gameSize
         self.length = initialLength
-        self.head = Point(x=random.randint(initialLength, gameSize-initialLength), y=random.randint(initialLength, gameSize-initialLength))
-        self.tail = trace(self.head, [Direction.WEST for x in range(initialLength-1)])
+        start = Point(x=random.randint(initialLength, gameSize-initialLength), y=random.randint(initialLength, gameSize-initialLength))
+        self.body = deque([Point(start.x + i, start.y) for i in range(initialLength)])
 
     def move(self, direction):
-        prospect = onward[direction](self.head)
-        if prospect.x < 0 or prospect.y < 0 or prospect.x >= self.size or prospect.y >= self.size or prospect in self.tail:
+        prospect = onward[direction](self.body[0])
+        if prospect.x < 0 or prospect.y < 0 or prospect.x >= self.size or prospect.y >= self.size or prospect in self.body:
             return None
         else:
-            self.tail.appendleft(self.head)
-            self.tail.pop()
-            self.head = prospect
-            return self.head
+            self.body.appendleft(prospect)
+            self.body.pop()
+            return self.body[0]
 
     def draw(self):
         grid = [['.' for x in range(self.size)] for x in range(self.size)]
-        grid[self.head.y][self.head.x] = 'o' # str(1)
-        for i, p in enumerate(self.tail):
-            grid[p.y][p.x] = 'x' # str(i+2)
+        for i, p in enumerate(self.body):
+            grid[p.y][p.x] = str(i+1)
         print((self.size+2) * '-')
         for i in range(self.size):
             print('|' + ''.join(grid[i]) + '|')
@@ -90,4 +74,4 @@ class Snake:
 
 
 # Snake(27, 9).run([Direction.NORTH, Direction.NORTH, Direction.EAST, Direction.EAST, Direction.SOUTH, Direction.SOUTH])
-# Snake(27, 9).run([Direction(random.randint(1, 4)) for i in range(30)])
+Snake(27, 9).run([Direction(random.randint(1, 2)) for i in range(30)])
