@@ -55,8 +55,7 @@ class Snake:
         self.size = gameSize
         self.length = initialLength
         self.head = Point(x=random.randint(initialLength, gameSize-initialLength), y=random.randint(initialLength, gameSize-initialLength))
-        self.moves = deque([Direction.WEST for x in range(initialLength-1)])
-        self.tail = trace(self.head, self.moves)
+        self.tail = trace(self.head, [Direction.WEST for x in range(initialLength-1)])
 
     def move(self, direction):
         prospect = onward[direction](self.head)
@@ -66,9 +65,6 @@ class Snake:
             self.tail.appendleft(self.head)
             self.tail.pop()
             self.head = prospect
-            self.moves.appendleft(direction)
-            self.moves.pop()
-            # self.tail = trace(self.head, self.moves)
             return self.head
 
     def draw(self):
@@ -93,5 +89,5 @@ class Snake:
                 self.draw()
 
 
-# Snake(15, 4).run([Direction.WEST, Direction.WEST, Direction.NORTH, Direction.WEST])
-Snake(27, 9).run([Direction(random.randint(1, 2)) for i in range(30)])
+# Snake(27, 9).run([Direction.NORTH, Direction.NORTH, Direction.EAST, Direction.EAST, Direction.SOUTH, Direction.SOUTH])
+# Snake(27, 9).run([Direction(random.randint(1, 4)) for i in range(30)])
